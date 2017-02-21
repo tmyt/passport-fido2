@@ -1,8 +1,8 @@
 # Passport-FIDO2
 
-** THIS IS BETA **
+**THIS IS BETA**
 
-Passport strategy for authenticating with FIDO 2.0.
+[Passport](http://passportjs.org/) strategy for authenticating with FIDO 2.0.
 
 ## Install
 
