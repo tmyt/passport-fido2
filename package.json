@@ -1,0 +1,16 @@
+{
+  "name": "passport-fido2",
+  "version": "0.0.1",
+  "description": "",
+  "main": "./lib",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "jwk-to-pem": "^1.2.6",
+    "passport-strategy": "^1.0.0"
+  }
+}
