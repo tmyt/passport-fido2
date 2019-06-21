@@ -1,6 +1,6 @@
 {
   "name": "passport-fido2",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "",
   "main": "./lib",
   "scripts": {
@@ -10,7 +10,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "fido2-lib": "git+https://github.com/tmyt/fido2-lib.git#feature/android-safetynet",
+    "fido2-lib": "git+https://github.com/tmyt/fido2-lib.git#feature/extra-attestation",
     "jwk-to-pem": "^1.2.6",
     "passport-strategy": "^1.0.0"
   }
