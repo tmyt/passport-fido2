@@ -107,10 +107,10 @@ app.get('/auth/fido2/register', (req, res) => {
 
 ## Note
 
-Web service need to send these parameters via request body for `passport.authenticate('fido2')` endpoint.
+Web service must to send these parameters via request body for `passport.authenticate('fido2')` endpoint.
 
-- keyId (required)
-- username (optional)
+- id (optional): Service optional user identifier.
+- result (required): JSON serialized `navigator.credentials.get` result. All UInt8Array are serialized to JSON array.
 
 ## License
 
