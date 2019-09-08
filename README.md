@@ -14,7 +14,7 @@ $ npm install passport-fido2
 
 ### Configure Strategy
 
-```
+```js
 passport.use(new Fido2Strategy({
   origin: 'https://example.com',
   readProfile: (req, callback) => {
@@ -45,7 +45,7 @@ function(ids, profile, done){
   process.nextTick(function(){
     return done(null, profile);
   });
-});
+}));
 ```
 
 ### Authenticate Requests
@@ -104,6 +104,43 @@ app.get('/auth/fido2/register', (req, res) => {
 - authenticatorAttachment (optional): Webauthn authenticatorAttachment (default: "platform").
 - authenticatorRequiredResidentKey (optional): Webauthn authenticatorRequireResidentKey (default: false).
 - authenticatorUserVerification (optional): Webauthn authenticatorUserVerification (default: "required").
+
+## Strategy functions
+
+### attestationOptions
+
+```js
+// req: Express request object
+// callback: function(error, attestationOption)
+function attestationOptions(req, callback);
+
+```
+
+### attestationResult
+
+```js
+// req.body.result: JSON serialized attestation object (Uint8Array convert to JSON array).
+// req: Express request object
+// callback: function(error, attestationResultObject);
+function attestationResult(req, callback);
+```
+
+### assertionOptions
+
+```js
+// req: Express request object
+// id: Application defined user id. Pass to first argument of readPublicKeyForUser.
+// callback: function(error, assertionOptions)
+function assertionOptions(req, id, callback);
+```
+
+### assertionResult
+
+```js
+// req: Express request object
+// callback: function(error, assertionResultObject);
+function assertionResult(req, callback)
+```
 
 ## Note
 
