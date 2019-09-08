@@ -10,7 +10,10 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "fido2-lib": "git+https://github.com/tmyt/fido2-lib.git#feature/extra-attestation",
+    "fido2-lib": "^2.1.1",
     "passport-strategy": "^1.0.0"
+  },
+  "peerDependencies": {
+    "fido2-lib": "^2.1.1"
   }
 }
