@@ -14,60 +14,140 @@ $ npm install passport-fido2
 
 ### Configure Strategy
 
-```
+```js
 passport.use(new Fido2Strategy({
-  readProfile: (id, callback) => {
-    fs.readFile(`./keys/${id}.profile`, (err, data) => {
-      if(err) return callback(err, null, null);
-      try { data = JSON.parse(data); } catch(e) { return callback(e, null, null); }
-      callback(null, data.key, data.profile);
+  origin: 'https://example.com',
+  readProfile: (req, callback) => {
+    /* req: {
+     *   username: string,
+     *   keyId: string,
+     * }
+     * callback: (Error, Profile) -> void
+     */
+    fs.readFile(`./keys/${req.keyId}.profile`, (err, data) => {
+      if(err) return callback(err, null);
+      try { data = JSON.parse(data); } catch(e) { return callback(e, null); }
+      callback(null, data);
     });
-  }
+  },
+  readPublicKeyIdsForUser: (username, callback) => {
+    const ids = [1, 2, 3];
+    callback(null, ids.map(id => ({
+      id, type: 'public-key', transports: [ 'internal' ],
+    })));
+  },
+  readPublicKeyForId: (id, callback) => {
+    const key = 'pem';
+    callback(null, key);
+  },
 },
-function(id, profile, done){
+function(ids, profile, done){
   process.nextTick(function(){
     return done(null, profile);
   });
-});
+}));
 ```
 
 ### Authenticate Requests
 
 ```js
-app.get('/auth/fido2',
+app.post('/auth/fido2',
   passport.authenticate('fido2'));
-
-app.get('/auth/line/callback',
+app.post('/auth/fido2/callback',
   passport.authenticate('fido2', { failureRedirect: '/login', successRedirect: '/' }));
-
-```
-
-### Generate challenge
-
-```js
-app.get('/auth/fido2/challenge',
-  (req, res) => res.send(Fido2Strategy.challenge('hmac-secret')));
+app.get('/auth/fido2/get', (req, res) => {
+  const username = req.query.username;
+  stragegy.assertionOptions(req, username, (err, opts) => {
+    if(err) return res.status(500).send(err);
+    res.send(opts);
+  });
+});
+app.get('/auth/fido2/create', (req, res) => {
+  const username = req.query.username; 
+  strategy.attestationOptions(req, (err, opts) => {
+    opts.user = {
+      displayName: username,
+      id: username,
+      name: username,
+      icon: 'https://example.com/example.png',
+    };
+    res.send(opts);
+  });
+});
+app.get('/auth/fido2/register', (req, res) => {
+  try{
+    strategy.attestationResult(req, (err, result) => {
+      if(err) return res.status(500).send(err);
+      res.sendStatus(200);
+    });
+  }catch(e){
+    res.sendStatus(500);
+  }
+});
 
 ```
 
 ## Options
 
-- passReqToCallback (optional): Pass req object to callback
-- readProfile (required): function(id, callback(err, pubKey, profile)). you need load public key from your storage.
+- passReqToCallback (optional): Pass req object to callback (default: false).
+- readProfile (required): function(ids, callback(err, profile)). Read profile related to ids. `ids: { keyId: string, username: string }`.
+- readPublicKeyForId (required): function(keyId, callback(err, keyString)). Read public-key for keyId.
+- readPublicKeyIdsForUser (required): function(username, callback(err, keys)). Read public-key ids for username. `keys: Array of { id: 'keyid', type: 'public-key', transports: [ 'internal' ] }`.
+- origin (required): Webauthn origin.
+- timeout (optional): Webauthn timeout (default: 6000).
+- rpId (optional): Webauthn rpId (default: "passport-fido2").
+- rpName (optional): Webauthn rpName (default: "passport-fido2").
+- rpIcon (optional): Webauthn rpIcon (default: "").
+- challengeSize (optional): Webauthn challengeSize (default: 128).
+- attestation (optional): Webauthn attestation (default: "direct").
+- cryptParams (optional): Webauthn cryptoParams (default: [-7, -257]).
+- authenticatorAttachment (optional): Webauthn authenticatorAttachment (default: "platform").
+- authenticatorRequiredResidentKey (optional): Webauthn authenticatorRequireResidentKey (default: false).
+- authenticatorUserVerification (optional): Webauthn authenticatorUserVerification (default: "required").
+
+## Strategy functions
+
+### attestationOptions
+
+```js
+// req: Express request object
+// callback: function(error, attestationOption)
+function attestationOptions(req, callback);
+
+```
+
+### attestationResult
+
+```js
+// req.body.result: JSON serialized attestation object (Uint8Array convert to JSON array).
+// req: Express request object
+// callback: function(error, attestationResultObject);
+function attestationResult(req, callback);
+```
+
+### assertionOptions
+
+```js
+// req: Express request object
+// id: Application defined user id. Pass to first argument of readPublicKeyForUser.
+// callback: function(error, assertionOptions)
+function assertionOptions(req, id, callback);
+```
+
+### assertionResult
+
+```js
+// req: Express request object
+// callback: function(error, assertionResultObject);
+function assertionResult(req, callback)
+```
 
 ## Note
 
-Web service must send these authentication parameters via Query String.
+Web service must to send these parameters via request body for `passport.authenticate('fido2')` endpoint.
 
-- id
-- clientData
-- authenticatorData
-- signature
-
-And you may send these params (server generated challenges).
-
-- c
-- cs
+- id (optional): Service optional user identifier.
+- result (required): JSON serialized `navigator.credentials.get` result. All UInt8Array are serialized to JSON array.
 
 ## License
 

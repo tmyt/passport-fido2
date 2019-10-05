@@ -1,6 +1,6 @@
 {
   "name": "passport-fido2",
-  "version": "0.0.3",
+  "version": "1.2.0",
   "description": "",
   "main": "./lib",
   "scripts": {
@@ -10,7 +10,10 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "jwk-to-pem": "^1.2.6",
+    "fido2-lib": "^2.1.1",
     "passport-strategy": "^1.0.0"
+  },
+  "peerDependencies": {
+    "fido2-lib": "^2.1.1"
   }
 }
