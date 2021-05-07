@@ -10,11 +10,10 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "fido2-lib": "^2.1.1",
+    "@simplewebauthn/server": "^3.0.0",
     "passport-strategy": "^1.0.0"
   },
-  "peerDependencies": {
-    "fido2-lib": "^2.1.1"
-  },
-  "publishConfig": { "registry": "https://npm.pkg.github.com/" }
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  }
 }
