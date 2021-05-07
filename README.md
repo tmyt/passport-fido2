@@ -37,8 +37,11 @@ passport.use(new Fido2Strategy({
     })));
   },
   readPublicKeyForId: (id, callback) => {
-    const key = 'pem';
-    callback(null, key);
+    const key = 'base64-encoded-credentialPublicKey';
+    callback(null, {
+      credentialID: id,
+      credentialPublicKey: Buffer.from(key, 'base64')),
+    });
   },
 },
 function(ids, profile, done){
